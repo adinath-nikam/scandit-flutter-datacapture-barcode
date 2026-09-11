@@ -14,7 +14,11 @@ spm_enabled = lambda {
     if File.exist?(plugins_file)
       begin
         dependencies_hash = JSON.parse(File.read(plugins_file))
-        return dependencies_hash.dig("swift_package_manager_enabled", "ios") == true
+        return false unless dependencies_hash.is_a?(Hash)
+
+        spm_value = dependencies_hash["swift_package_manager_enabled"]
+        return spm_value == true if spm_value == true || spm_value == false
+        return spm_value.is_a?(Hash) && spm_value.dig("ios") == true
       rescue JSON::ParserError
         return false
       end
